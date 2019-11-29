@@ -12,7 +12,7 @@ const initialState = {
     {
       id: '1',
       kind: 'number',
-      data: '55',
+      data: 55,
     },
     {
       id: '2',

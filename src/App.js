@@ -30,6 +30,26 @@ const Wrapper = styled.ul`
   display: flex;
 `
 
+const TimelapseWidget = (props) => {
+  if(!props.data) return 'no data'
+
+  return props.data.map(number => {
+    return (<div>{number}</div>)
+  }) 
+}
+
+
+const WidgetFactory = ({data, kind}) => {
+  switch (kind) {
+    case 'number':
+      return JSON.stringify(data)
+    case 'timelapse':
+      return (<TimelapseWidget data={data} />)
+    default:
+      return null
+  }
+}
+
 
 function App(props) {
   console.log(props)
@@ -42,7 +62,7 @@ function App(props) {
       setSelectedWidget(widget.id)
     }
 
-    return (<Widget key={widget.id} onClick={handleClick}>{JSON.stringify(widget.data)}</Widget>)
+    return (<Widget key={widget.id} onClick={handleClick}><WidgetFactory data={widget.data} kind={widget.kind}/></Widget>)
   } ) 
 
   return (
@@ -50,7 +70,7 @@ function App(props) {
       <Wrapper>
         {widgetList}
       </Wrapper>
-      {widget &&  <FullScreenWidget>{JSON.stringify(widget.data)}</FullScreenWidget>}
+      {widget &&  <FullScreenWidget><WidgetFactory data={widget.data} kind={widget.kind}/></FullScreenWidget>}
     </div>
   );
 }

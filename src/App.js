@@ -38,13 +38,19 @@ const TimelapseWidget = (props) => {
   }) 
 }
 
+export const NumberWidget = (props) => {
+  if(!props.data) return 'no data'
 
-const WidgetFactory = ({data, kind}) => {
+  return (JSON.stringify(props.data))  
+}
+
+
+export const WidgetFactory = ({data, kind}) => {
   switch (kind) {
     case 'number':
-      return JSON.stringify(data)
+      return <div><NumberWidget data={data}/></div>
     case 'timelapse':
-      return (<TimelapseWidget data={data} />)
+      return <TimelapseWidget data={data} />
     default:
       return null
   }

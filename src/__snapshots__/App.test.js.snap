@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`WidgetFactory should render number widget when kind is number 1`] = `
-<div>
-  "2"
-</div>
-`;

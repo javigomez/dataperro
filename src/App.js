@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import styled from 'styled-components'
 
-const Widget = styled.li`
+export const Widget = styled.li`
 background: #e2dfdd;
 margin: 10px;
 width: 25vw;
@@ -30,11 +30,11 @@ const Wrapper = styled.ul`
   display: flex;
 `
 
-const TimelapseWidget = (props) => {
+export const TimelapseWidget = (props) => {
   if(!props.data) return 'no data'
 
-  return props.data.map(number => {
-    return (<div>{number}</div>)
+  return props.data.map((number, index) => {
+    return (<div key={index}>{number}</div>)
   }) 
 }
 
@@ -58,7 +58,7 @@ export const WidgetFactory = ({data, kind}) => {
 
 
 function App(props) {
-  console.log(props)
+  
   const [selectedWidget, setSelectedWidget] = useState(props.initialData.selectedWidget)
 
   const widget = props.initialData.widgets.find(widget => widget.id === selectedWidget)

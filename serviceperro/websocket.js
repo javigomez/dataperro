@@ -5,4 +5,5 @@ wss.on('connection', function connection(ws) {
     console.log('received: %s', message)
     ws.send(`something ${message}`)
   })
+  setInterval(() => { ws.send(Math.random()*100) }, 1000)
 })

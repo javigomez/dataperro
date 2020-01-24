@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components'
 
 export const Widget = styled.li`
@@ -59,11 +59,38 @@ export const WidgetFactory = ({data, kind}) => {
 
 function App(props) {
   
+  const [widgetsData, setWidgetsData] = useState(
+    {
+      '1': {
+        id: '1',
+        kind: 'number',
+        data: 55,
+      },
+      '2': {
+        id: '2',
+        kind: 'timelapse',
+        data: [3, 14, 16, 54, 28, 14]
+      }
+    }
+  )
   const [selectedWidget, setSelectedWidget] = useState(props.initialData.selectedWidget)
+  useEffect(()=> {
+    const client = new WebSocket('ws://localhost:8080')
+    client.onmessage = (message) => { 
+      setWidgetsData({
+        ...widgetsData,
+        '1': {
+          ...widgetsData['1'],
+          data: message.data
+        }
+      }) 
+    }
+  }, [])
 
-  const widget = props.initialData.widgets.find(widget => widget.id === selectedWidget)
+  const widget = widgetsData[selectedWidget]
 
-  const widgetList = props.initialData.widgets.map(widget => {
+
+  const widgetList = Object.values(widgetsData).map(widget => {
     function handleClick () {
       setSelectedWidget(widget.id)
     }

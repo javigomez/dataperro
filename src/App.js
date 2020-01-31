@@ -57,7 +57,7 @@ export const WidgetFactory = ({data, kind}) => {
 }
 
 
-function App(props) {
+function App() {
   
   const [widgetsData, setWidgetsData] = useState(
     {
@@ -69,23 +69,42 @@ function App(props) {
       '2': {
         id: '2',
         kind: 'timelapse',
-        data: [3, 14, 16, 54, 28, 14]
+        data: []
       }
     }
   )
-  const [selectedWidget, setSelectedWidget] = useState(props.initialData.selectedWidget)
-  useEffect(()=> {
-    const client = new WebSocket('ws://localhost:8080')
-    client.onmessage = (message) => { 
-      setWidgetsData({
-        ...widgetsData,
-        '1': {
-          ...widgetsData['1'],
-          data: message.data
-        }
-      }) 
-    }
-  }, [])
+  const [selectedWidget, setSelectedWidget] = useState(null)
+    useEffect(() => {
+      const client = new WebSocket('ws://localhost:8080')
+      client.onmessage = (message) => {
+        const messageData = JSON.parse(message.data)
+        console.log(messageData)
+        switch (messageData.kind) {
+          case 'number':
+            setWidgetsData({
+              ...widgetsData,
+              '1': {
+                ...widgetsData['1'],
+                data: messageData.value
+              }
+            })
+            break
+          case 'timelapse':
+            setWidgetsData({
+              ...widgetsData,
+              '2': {
+                ...widgetsData['2'],
+                data: [...widgetsData['2'].data, messageData.value]
+              }
+            })
+            break
+          default:
+            break;
+        } 
+         
+      }
+    }, [])
+  
 
   const widget = widgetsData[selectedWidget]
 

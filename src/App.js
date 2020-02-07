@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, memo} from 'react';
 import styled from 'styled-components'
 
 export const Widget = styled.li`
@@ -46,6 +46,7 @@ export const NumberWidget = (props) => {
 
 
 export const WidgetFactory = ({data, kind}) => {
+  console.count(`widget ${kind}`)
   switch (kind) {
     case 'number':
       return <div><NumberWidget data={data}/></div>
@@ -56,6 +57,7 @@ export const WidgetFactory = ({data, kind}) => {
   }
 }
 
+const MemoizedWidgetFactory = memo(WidgetFactory)
 
 function App() {
   
@@ -78,25 +80,25 @@ function App() {
       const client = new WebSocket('ws://localhost:8080')
       client.onmessage = (message) => {
         const messageData = JSON.parse(message.data)
-        console.log(messageData)
+        console.log({messageData, widgetsData})
         switch (messageData.kind) {
           case 'number':
-            setWidgetsData({
-              ...widgetsData,
+            setWidgetsData((prevData) => ({
+              ...prevData,
               '1': {
-                ...widgetsData['1'],
+                ...prevData['1'],
                 data: messageData.value
               }
-            })
+            }))
             break
           case 'timelapse':
-            setWidgetsData({
-              ...widgetsData,
+            setWidgetsData((prevData) => ({
+              ...prevData,
               '2': {
-                ...widgetsData['2'],
-                data: [...widgetsData['2'].data, messageData.value]
+                ...prevData['2'],
+                data: [...prevData['2'].data, messageData.value]
               }
-            })
+            }))
             break
           default:
             break;
@@ -114,7 +116,7 @@ function App() {
       setSelectedWidget(widget.id)
     }
 
-    return (<Widget key={widget.id} onClick={handleClick}><WidgetFactory data={widget.data} kind={widget.kind}/></Widget>)
+    return (<Widget key={widget.id} onClick={handleClick}><MemoizedWidgetFactory data={widget.data} kind={widget.kind}/></Widget>)
   } ) 
 
   return (
@@ -122,7 +124,7 @@ function App() {
       <Wrapper>
         {widgetList}
       </Wrapper>
-      {widget &&  <FullScreenWidget><WidgetFactory data={widget.data} kind={widget.kind}/></FullScreenWidget>}
+      {widget &&  <FullScreenWidget><MemoizedWidgetFactory data={widget.data} kind={widget.kind}/></FullScreenWidget>}
     </div>
   );
 }
